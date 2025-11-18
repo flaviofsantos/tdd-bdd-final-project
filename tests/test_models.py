@@ -128,9 +128,9 @@ class TestProductModel(unittest.TestCase):
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(product.id)
 
-        productName = product.name
+        product_name = product.name
 
-        new_product = Product.find_by_name(productName)[0]
+        new_product = Product.find_by_name(product_name)[0]
         self.assertEqual(new_product.name, product.name)
         self.assertEqual(new_product.description, product.description)
         self.assertEqual(Decimal(new_product.price), product.price)
@@ -139,60 +139,53 @@ class TestProductModel(unittest.TestCase):
 
         new_product.delete()
 
-        deleted_product = Product.find_by_name(productName)
+        deleted_product = Product.find_by_name(product_name)
         self.assertEqual(deleted_product.count(), 0)
 
     def test_list_all_products(self):
-        """It should List all products"""
+        """It should List all Products in the database"""
         products = Product.all()
         self.assertEqual(products, [])
-        product = ProductFactory()
-        product.id = None
-        product.create()
-        # Assert that it was assigned an id and shows up in the database
-        self.assertIsNotNone(product.id)
-        products.append(product)
+        # Create 5 Products
+        for _ in range(5):
+            product = ProductFactory()
+            product.create()
+        # See if we get back 5 products
+        products = Product.all()
+        self.assertEqual(len(products), 5)
 
-        product = ProductFactory()
-        product.id = None
-        product.create()
-        # Assert that it was assigned an id and shows up in the database
-        self.assertIsNotNone(product.id)
-        products.append(product)
-        
-        product = ProductFactory()
-        product.id = None
-        product.create()
-        # Assert that it was assigned an id and shows up in the database
-        self.assertIsNotNone(product.id)
-        products.append(product)
+    def test_find_by_name(self):
+        """It should Find a product by name"""
+        products = ProductFactory.create_batch(5)
+        for product in products:
+            product.create()
+        name = products[0].name
+        count = len([product for product in products if product.name == name])
+        found = Product.find_by_name(name)
+        self.assertEqual(found.count(), count)
+        for product in found:
+            self.assertEqual(product.name, name)
 
-        database_products = Product.all()
+    def test_find_by_category(self):
+        """It should find products by category"""
+        products = ProductFactory.create_batch(10)
+        for product in products:
+            product.create()
+        category = products[0].category
+        count = len([product for product in products if product.category == category])
+        found = Product.find_by_category(category)
+        self.assertEqual(found.count(), count)
+        for product in found:
+            self.assertEqual(product.category, category)
 
-        self.assertEqual(len(database_products), len(products))
-
-
-        for i in range(len(list1)):
-            print(list1[i], list2[i])
-
-
-        for product in database_products:
-            self.assertEqual(product.name, product.name)
-            self.assertEqual(product.description, product.description)
-            self.assertEqual(Decimal(product.price), product.price)
-            self.assertEqual(product.available, product.available)
-            self.assertEqual(product.category, product.category)
-
-
-
-        # productName = product.name
-
-        # new_product = Product.find_by_name(productName)[0]
-        # self.assertEqual(new_product.name, product.name)
-        # self.assertEqual(new_product.description, product.description)
-        # self.assertEqual(Decimal(new_product.price), product.price)
-        # self.assertEqual(new_product.available, product.available)
-        # self.assertEqual(new_product.category, product.category)
-
-
-
+    def test_find_by_availability(self):
+        """It should find products by availability"""
+        products = ProductFactory.create_batch(10)
+        for product in products:
+            product.create()
+        available = products[0].available
+        count = len([product for product in products if product.available == available])
+        found = Product.find_by_availability(available)
+        self.assertEqual(found.count(), count)
+        for product in found:
+            self.assertEqual(product.available, available)
