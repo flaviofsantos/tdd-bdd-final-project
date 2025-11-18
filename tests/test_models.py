@@ -101,6 +101,98 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(new_product.available, product.available)
         self.assertEqual(new_product.category, product.category)
 
-    #
-    # ADD YOUR TEST CASES HERE
-    #
+    def test_read_a_product(self):
+        """It should Read a product"""
+        products = Product.all()
+        self.assertEqual(products, [])
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+
+        new_product = Product.find_by_name(product.name)[0]
+        self.assertEqual(new_product.name, product.name)
+        self.assertEqual(new_product.description, product.description)
+        self.assertEqual(Decimal(new_product.price), product.price)
+        self.assertEqual(new_product.available, product.available)
+        self.assertEqual(new_product.category, product.category)
+
+    def test_delete_a_product(self):
+        """It should Delete a product"""
+        products = Product.all()
+        self.assertEqual(products, [])
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+
+        productName = product.name
+
+        new_product = Product.find_by_name(productName)[0]
+        self.assertEqual(new_product.name, product.name)
+        self.assertEqual(new_product.description, product.description)
+        self.assertEqual(Decimal(new_product.price), product.price)
+        self.assertEqual(new_product.available, product.available)
+        self.assertEqual(new_product.category, product.category)
+
+        new_product.delete()
+
+        deleted_product = Product.find_by_name(productName)
+        self.assertEqual(deleted_product.count(), 0)
+
+    def test_list_all_products(self):
+        """It should List all products"""
+        products = Product.all()
+        self.assertEqual(products, [])
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+        products.append(product)
+
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+        products.append(product)
+        
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+        products.append(product)
+
+        database_products = Product.all()
+
+        self.assertEqual(len(database_products), len(products))
+
+
+        for i in range(len(list1)):
+            print(list1[i], list2[i])
+
+
+        for product in database_products:
+            self.assertEqual(product.name, product.name)
+            self.assertEqual(product.description, product.description)
+            self.assertEqual(Decimal(product.price), product.price)
+            self.assertEqual(product.available, product.available)
+            self.assertEqual(product.category, product.category)
+
+
+
+        # productName = product.name
+
+        # new_product = Product.find_by_name(productName)[0]
+        # self.assertEqual(new_product.name, product.name)
+        # self.assertEqual(new_product.description, product.description)
+        # self.assertEqual(Decimal(new_product.price), product.price)
+        # self.assertEqual(new_product.available, product.available)
+        # self.assertEqual(new_product.category, product.category)
+
+
+
